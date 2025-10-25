@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>SmartVaga - Painel Principal</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-900 text-gray-100 font-sans flex h-screen">
+
+  <!-- 📁 Sidebar -->
+  <aside class="w-64 bg-gray-800 flex flex-col p-6">
+    <div class="flex items-center gap-5 mb-10">
+      <img src="img/logo.png" alt="SmartVaga Logo" class="w-20 h-20 rounded">
+      <h1 class="text-xl font-bold text-indigo-400">SmartVaga</h1>
+    </div>
+
+    <nav class="flex flex-col gap-4 text-gray-300">
+      <a href="dashboard.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>📊</i> Dashboard</a>
+      <a href="clientes.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>👤</i> Clientes</a>
+      <a href="veiculos.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>🚗</i> Veículos</a>
+      <a href="registros.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>🔁</i> Entradas/Saídas</a>
+      <a href="reconhecimento.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>📸</i> Capturar Placa</a>
+      <a href="pagamentos.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>💰</i> Pagamentos</a>
+      <a href="#" onclick="logout()" class="flex items-center gap-2 text-red-400 hover:text-red-500 transition"><i>🚪</i> Sair</a>
+      
+    </nav>
+  </aside>
+
+  <!-- 🌟 Conteúdo principal -->
+  <main class="flex-1 flex flex-col justify-center items-center text-center">
+    <h2 class="text-3xl font-bold text-indigo-400 mb-6">🚘 Sistema de Estacionamento SmartVaga</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full max-w-3xl">
+
+      <button onclick="window.location.href='clientes.html'"
+              class="bg-blue-600 hover:bg-blue-700 transition text-white font-semibold py-4 rounded-lg shadow-md">
+        👤 Gerenciar Clientes
+      </button>
+
+      <button onclick="window.location.href='veiculos.html'"
+              class="bg-green-600 hover:bg-green-700 transition text-white font-semibold py-4 rounded-lg shadow-md">
+        🚗 Gerenciar Veículos
+      </button>
+
+      <button onclick="window.location.href='registros.html'"
+              class="bg-purple-600 hover:bg-purple-700 transition text-white font-semibold py-4 rounded-lg shadow-md">
+        🔁 Entradas/Saídas
+      </button>
+
+      <button onclick="window.location.href='reconhecimento.html'"
+              class="bg-indigo-600 hover:bg-indigo-700 transition text-white font-semibold py-4 rounded-lg shadow-md">
+        📸 Capturar
+      </button>
+    </div>
+
+    <p class="mt-10 text-gray-400">Empresa logada: <span id="empresaNome" class="font-semibold text-indigo-400"></span></p>
+  </main>
+
+  <script>
+    // Exibe nome da empresa logada
+    const empresa = JSON.parse(localStorage.getItem("empresaLogada"));
+    if (empresa && empresa.nome) {
+      document.getElementById("empresaNome").textContent = empresa.nome;
+    }
+
+    // Função de logout
+    function logout() {
+      localStorage.removeItem("empresaLogada");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>

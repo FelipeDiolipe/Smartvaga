@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>SmartVaga - Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="auth.js"></script>
+</head>
+
+<body class="bg-gray-900 text-gray-100 font-sans flex h-screen">
+
+  <!-- 📁 Sidebar -->
+  <aside class="w-64 bg-gray-800 flex flex-col p-6">
+    <div class="flex items-center gap-3 mb-8">
+      <img src="img/logo.png" alt="SmartVaga Logo" class="w-20 h-20 rounded">
+      <h1 class="text-xl font-bold text-indigo-400">SmartVaga</h1>
+    </div>
+
+    <nav class="flex flex-col gap-4 text-gray-300">
+      <a href="dashboard.html" class="flex items-center gap-2 text-indigo-400 font-semibold"><i>📊</i> Dashboard</a>
+      <a href="clientes.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>👥</i> Clientes</a>
+      <a href="veiculos.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>🚗</i> Veículos</a>
+      <a href="registros.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>🔁</i> Entradas/Saídas</a>
+      <a href="reconhecimento.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>📸</i> Capturar</a>
+      <a href="pagamentos.html" class="flex items-center gap-2 hover:text-indigo-400 transition"><i>💰</i> Pagamentos</a>
+      <a href="#" onclick="sair()" class="flex items-center gap-2 text-red-400 hover:text-red-500 transition"><i>🚪</i> Sair</a>
+    </nav>
+  </aside>
+
+  <!-- 🌟 Conteúdo principal -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    
+    <!-- Cabeçalho -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-indigo-400">📊 Dashboard</h1>
+      <span class="text-gray-300">Empresa logada:
+        <span id="empresaNome" class="text-yellow-400 font-semibold"></span>
+      </span>
+    </div>
+
+    <!-- Cards de estatísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-center">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:scale-105 transition">
+        <h2 class="text-lg font-semibold text-yellow-400 mb-2">🚗 Entradas de Hoje</h2>
+        <p id="entradasHoje" class="text-5xl font-extrabold text-white">0</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:scale-105 transition">
+        <h2 class="text-lg font-semibold text-green-400 mb-2">👥 Clientes Cadastrados</h2>
+        <p id="totalClientes" class="text-5xl font-extrabold text-white">0</p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:scale-105 transition">
+        <h2 class="text-lg font-semibold text-blue-400 mb-2">🚘 Veículos Cadastrados</h2>
+        <p id="totalVeiculos" class="text-5xl font-extrabold text-white">0</p>
+      </div>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+      <h2 class="text-xl mb-6 text-center text-yellow-400 font-semibold">📈 Entradas nos Últimos 7 Dias</h2>
+      <canvas id="graficoEntradas" height="120"></canvas>
+    </div>
+
+    <!-- Voltar -->
+    <div class="text-center mt-8">
+      <a href="index.html" class="text-indigo-400 hover:text-indigo-300 font-semibold transition">
+        ⬅ Voltar ao menu principal
+      </a>
+    </div>
+  </main>
+
+  <script>
+    async function carregarDashboard() {
+      try {
+        const resposta = await fetch("/dashboard");
+        const dados = await resposta.json();
+
+        document.getElementById("entradasHoje").textContent = dados.entradas_hoje || 0;
+        document.getElementById("totalClientes").textContent = dados.total_clientes || 0;
+        document.getElementById("totalVeiculos").textContent = dados.total_veiculos || 0;
+
+        // === Gráfico ===
+        const dias = dados.historico.map(d => new Date(d.dia).toLocaleDateString("pt-BR"));
+        const valores = dados.historico.map(d => d.total);
+
+        const ctx = document.getElementById("graficoEntradas").getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: dias,
+            datasets: [{
+              label: "Entradas",
+              data: valores,
+              backgroundColor: "#6366F1",
+              borderColor: "#818CF8",
+              borderWidth: 2,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { color: "#E5E7EB", font: { size: 13, weight: "bold" } },
+                grid: { color: "#374151" }
+              },
+              x: {
+                ticks: { color: "#E5E7EB", font: { size: 13, weight: "bold" } },
+                grid: { color: "#374151" }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: { color: "#E5E7EB", font: { size: 14, weight: "bold" } }
+              },
+              tooltip: {
+                backgroundColor: "#1F2937",
+                titleColor: "#FACC15",
+                bodyColor: "#F9FAFB",
+                borderColor: "#6366F1",
+                borderWidth: 1
+              }
+            }
+          }
+        });
+      } catch (erro) {
+        console.error("Erro ao carregar dashboard:", erro);
+      }
+    }
+
+    function sair() {
+      localStorage.removeItem("empresaLogada");
+      window.location.href = "login.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      verificarLogin();
+      mostrarEmpresa();
+      carregarDashboard();
+    });
+  </script>
+</body>
+</html>
